@@ -279,7 +279,7 @@ if __name__ == '__main__':
     # naver_series_agent(idx, (start, end))
     # print(f'finished idx {idx} - {start} to {end}')
     #
-    # # 4 인문
+    # # 4 인문 finished
     # idx = 4
     # start = 1
     # end = 200
@@ -287,7 +287,7 @@ if __name__ == '__main__':
     # naver_series_agent(idx, (start, end))
     # print(f'finished idx {idx} - {start} to {end}')
 
-    # # 5 역사/문화
+    # # 5 역사/문화 finished
     # idx = 5
     # start = 3
     # end = 200
@@ -296,7 +296,7 @@ if __name__ == '__main__':
     # print(f'finished idx {idx} - {start} to {end}')
     #
     #
-    # # 6 사회
+    # # 6 사회 finished
     # idx = 6
     # start = 1
     # end = 200
@@ -304,7 +304,7 @@ if __name__ == '__main__':
     # naver_series_agent(idx, (start, end))
     # print(f'finished idx {idx} - {start} to {end}')
     #
-    # # 7 과학
+    # # 7 과학 finished
     # idx = 7
     # start = 1
     # end = 100
@@ -312,7 +312,7 @@ if __name__ == '__main__':
     # naver_series_agent(idx, (start, end))
     # print(f'finished idx {idx} - {start} to {end}')
     #
-    # # 8 예술/종교
+    # # 8 예술/종교 finished
     # idx = 8
     # start = 1
     # end = 200
@@ -320,7 +320,7 @@ if __name__ == '__main__':
     # naver_series_agent(idx, (start, end))
     # print(f'finished idx {idx} - {start} to {end}')
     #
-    # # 9 어린이/청소년 233까지
+    # # 9 어린이/청소년 finished
     # idx = 9
     # start = 24
     # end = 200
@@ -353,6 +353,133 @@ if __name__ == '__main__':
     # print(f'finished idx {idx} - {start} to {end}')
     #
     # # 13 IT finished
+    # idx = 13
+    # start = 1
+    # end = 10
+    # print(f'start idx {idx} - {start} to {end}')
+    # naver_series_agent(idx, (start, end))
+    # print(f'finished idx {idx} - {start} to {end}')
+
+    # print('*******************************')
+    # print('finished all')
+    # print('*******************************')
+
+    ''' 2회차 수집 '''
+
+    # 0 소설
+    idx = 0
+    start = 227
+    end = 400
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 0 소설
+    idx = 0
+    start = 401
+    end = 600
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 1 시/에세이
+    idx = 1
+    start = 201
+    end = 400
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 2 경제/경영
+    idx = 2
+    start = 101
+    end = 200
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 3 자기계발
+    idx = 3
+    start = 101
+    end = 200
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 4 인문
+    idx = 4
+    start = 201
+    end = 400
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # # 5 역사/문화  finished max 203
+    # idx = 5
+    # start = 3
+    # end = 200
+    # print(f'start idx {idx} - {start} to {end}')
+    # naver_series_agent(idx, (start, end))
+    # print(f'finished idx {idx} - {start} to {end}')
+    #
+    #
+    # # 6 사회 finished max 256
+    # idx = 6
+    # start = 1
+    # end = 200
+    # print(f'start idx {idx} - {start} to {end}')
+    # naver_series_agent(idx, (start, end))
+    # print(f'finished idx {idx} - {start} to {end}')
+
+    # # 7 과학 finished max 115
+    # idx = 7
+    # start = 1
+    # end = 100
+    # print(f'start idx {idx} - {start} to {end}')
+    # naver_series_agent(idx, (start, end))
+    # print(f'finished idx {idx} - {start} to {end}')
+
+    # 8 예술/종교
+    idx = 8
+    start = 201
+    end = 400
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 9 어린이/청소년
+    idx = 9
+    start = 201
+    end = 400
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 10 생활
+    idx = 10
+    start = 101
+    end = 200
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 11 취미
+    idx = 11
+    start = 51
+    end = 100
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # 12 어학
+    idx = 12
+    start = 31
+    end = 80
+    print(f'start idx {idx} - {start} to {end}')
+    naver_series_agent(idx, (start, end))
+    print(f'finished idx {idx} - {start} to {end}')
+
+    # # 13 IT finished max 28
     # idx = 13
     # start = 1
     # end = 10
