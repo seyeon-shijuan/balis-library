@@ -385,8 +385,9 @@ css 적용이 된 admin 화면이 나오면 정상 동작
 
 
 ##  Monolith로 Django 서버 띄우기 완성 :sparkles:
-
-
-Contratulations!!
+<br>
+<img src="https://www.marinhumane.org/wp-content/uploads/2021/04/Congrats.jpg" width=130/>
+<br>
+<b>Congratulations!!</b>
 
 :tada: :tada: :tada: :tada: 
