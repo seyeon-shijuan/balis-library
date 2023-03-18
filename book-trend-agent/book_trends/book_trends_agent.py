@@ -10,6 +10,8 @@ import time
 from typing import Tuple
 from crawler.base_crawler import BaseCrawler
 import pandas as pd
+import datetime as dt
+from dateutil.tz import gettz
 
 
 class BestBooksCrawler:
@@ -17,49 +19,101 @@ class BestBooksCrawler:
         self.bookstore_crawler = BaseCrawler(url, option=option)
         self.bookstore_crawler.open_browser()
 
-    def get_naver_best(self):
+    def _naver_base_info(self, j, header, base_url, isbn_selector):
+        # if j == 19:
+        #     a = 5
+
+        # 기본 정보
+        rank = header.select("em")[0].text
+        title = header.select("strong")[0].text
+        writer = header.select("span.writer")[0].text.split(',')[0]
+        image = header.select("img")[0]['src']
+        sub_link = header.select("a")[0]['href']
+        container_selector = 'div#book_section-info > div.bookBasicInfo_basic_info__HCWyr > ul'
+
+        # 책 상세정보페이지 (to get isbn link)
+        isbn_link = self.bookstore_crawler.quick_attr_in_link(base_url + sub_link, isbn_selector, 'href')
+
+        # 책 상세 정보가 없는 경우 -> 국립중앙도서관 전자책 ISBN 조회
+        if not isbn_link:
+            title_tmp = title.replace(' ', '+')
+            gov_url = f'https://www.nl.go.kr/seoji/contents/S80100000000.do?page=1&pageUnit=10&schType=simple&schFld=title&schStr={title_tmp}&ebookYn=Y'
+
+            gov_sel = 'div#resultList_div'
+            gov_tag = self.bookstore_crawler.quick_tag_in_link(gov_url, gov_sel)
+
+            try:
+                # 검색 결과가 없는 경우(ISBN 번호가 부여되지 않은 전자책의 경우)
+                isbn_container = gov_tag.find('li', string='제본형태: 전자책').find_parent()
+            except AttributeError:
+                print(f"rank {rank} : {title} - does not exist in gov-library")
+                return None
+
+            gov_isbn_tag = isbn_container.select("li:nth-child(3)")
+            tmp = gov_isbn_tag[0]
+            isbn_val = tmp.text
+
+            # ISBN: 978-89-378-3637-4 (05830)
+            isbn_val = isbn_val.split(' ')[1].replace('-', '')
+            print(f'naver {rank}위 {title} 수집 필요')
+
+        else:
+            # isbn 추출 (parent select)
+            self.bookstore_crawler.new_tab(isbn_link)
+
+            soup = self.bookstore_crawler.get_soup()
+
+            try:
+                # 성인인증 페이지인경우 IndexError
+                container = soup.select(container_selector)[0]
+            except IndexError:
+                print(f"rank {rank} : {title} - unable to collect due to rate-18")
+                return None
+
+            isbn_container = container.find('div', string='ISBN').find_parent()
+            isbn_tag = isbn_container.select("div:nth-child(2)")
+            isbn_val = isbn_tag[0].text
+            self.bookstore_crawler.to_preveious_tap()
+
+        # isbn, 순위, 사이트, 제목, 작가, 이미지 수집
+        return {
+            'isbn': isbn_val,
+            'rank': rank,
+            'website': 'naver',
+            'title': title,
+            'writer': writer,
+            'image': image
+        }
+
+    def fetch_naver_best(self):
         target = 'https://series.naver.com/ebook/top100List.series?page='
         wrapper = 'div#content > div.lst_thum_wrap'
         base_url = 'https://series.naver.com'
         isbn_selector = '#content > ul.end_info.NE\=a\:ebi > li:nth-child(2) > span > a'
+        page_books = []
 
         for i in range(1, 6):
-            page_books = []
+            # page_books = []
             self.bookstore_crawler.move_page(target+str(i))
             ori_element = self.bookstore_crawler.select_element(selector=wrapper)[0]
             headers = ori_element.find_all("li", class_=None)
 
-            for header in headers:
-                rank = header.select("em")[0].text
-                title = header.select("strong")[0].text
-                writer = header.select("span.writer")[0].text
-                image = header.select("img")[0]['src']
-                sub_link = header.select("a")[0]['href']
+            for j, header in enumerate(headers):
+                rst = self._naver_base_info(j, header, base_url, isbn_selector)
+                if rst:
+                    page_books.append(rst)
+                time.sleep(0.5)
 
-                isbn_link = self.bookstore_crawler.quick_select_in_link(base_url+sub_link, isbn_selector, 'href')
-                a = 1
-                # self.bookstore_crawler.quit_browser(isbn_link,)
+        return page_books
 
-                detail_dict = {'rank': rank, 'title': title, 'writer': writer, 'image': image,}
-                yield
-
-                # yield (header, list(get_content(header.nextSibling)))
-
-
-            a = 0
+    def export_to_csv(self, in_list, outfile):
+        df = pd.DataFrame.from_records(in_list)
+        today = dt.datetime.now(gettz('Asia/Seoul')).today().strftime('%Y-%m-%d')
+        df['date'] = today
+        df.to_csv(f'../outfile/rank/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
+        print(outfile+'is saved')
 
 
-
-
-            # 사이트, 순위, 제목, 작가, 이미지 수집
-
-            # isbn 수집
-
-
-
-
-
-        return 0
 
 
 
@@ -77,9 +131,17 @@ def main():
 
 
     # 1. 판매량
-    # 1-1) 네이버, 교보, Yes24, 밀리의 서재, 리디북스 베스트 100 목록 수집
-    naver_df = crawler.get_naver_best()
-    a =0
+    # 1-1) 네이버, 교보, Yes24, 밀리의 서재, 리디북스 베스트 100 목록 수집 & CSV 추출
+    # naver_list = crawler.get_naver_best()
+    naver_list = crawler.fetch_naver_best()
+
+    # 1-2_ 네이버 파일로 쓰기
+    crawler.export_to_csv(naver_list, 'naver')
+    # df = pd.DataFrame.from_records(naver_list)
+    # today = dt.datetime.now(gettz('Asia/Seoul')).today().strftime('%Y-%m-%d')
+    # df['date'] = today
+    # outfile = 'naver'
+    # df.to_csv(f'../outfile/rank/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
 
 
     # # 새 브라우저
@@ -87,13 +149,8 @@ def main():
     # crawler.bookstore_crawler.new_browser('https://www.naver.com/', option)
 
 
-
-
-
-
-
     
-    # 1-2) CSV 추출 및 DB로 적재
+    # 1-2) CSV DB로 적재
     # isbn / title / website / sales_rank / interest(관심도) /
 
     # 2. 관심도

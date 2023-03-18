@@ -19,6 +19,9 @@ class BaseCrawler:
         self.option = option
         self.tmp_soup = None
         self.tmp_dom = None
+        self.tmp_header = {
+            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
+        }
 
         # Selenium 4.0 - load webdriver
         try:
@@ -34,6 +37,12 @@ class BaseCrawler:
         html = self.browser.page_source
         self.tmp_soup = BeautifulSoup(html, 'html.parser')
         self.tmp_dom = etree.HTML(str(self.tmp_soup))
+
+    def get_soup(self):
+        html = self.browser.page_source
+        self.tmp_soup = BeautifulSoup(html, 'html.parser')
+        self.tmp_dom = etree.HTML(str(self.tmp_soup))
+        return self.tmp_soup
 
     def open_browser(self):
         # Move to URL
@@ -69,19 +78,37 @@ class BaseCrawler:
         # terminates driver
         self.browser.quit()
 
-    def quick_attr_in_link(self, url, selector, attr):
-        headers = {
-            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
-        }
-        r = requests.get(url, headers=headers)
+    def quick_tag_in_link(self, url, selector):
+        r = requests.get(url, headers=self.tmp_header)
         soup = BeautifulSoup(r.content, 'html.parser')
         try:
-            element = soup.select(selector)[0]
-            val = element.get(attr)
+            tmp = soup.select(selector)
+            element = tmp[0]
+            # element = soup.select(selector)[0]
         except:
             return False
 
+        return element
+
+    def quick_attr_in_link(self, url, selector, attr):
+        element = self.quick_tag_in_link(url, selector)
+        if not element:
+            return False
+
+        val = element.get(attr)
         return val
+
+        # r = requests.get(url, headers=self.tmp_header)
+        # soup = BeautifulSoup(r.content, 'html.parser')
+        # try:
+        #     element = soup.select(selector)[0]
+        #     val = element.get(attr)
+        # except:
+        #     return False
+        #
+        # return val
+
+
 
     def search_keyword(self, text_field: Tuple[By, str], value: str, search: Tuple[By, str]):
         element = self.browser.find_element(*text_field)
