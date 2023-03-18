@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import time
 from typing import Tuple
 from lxml import etree
+import requests
 
 
 class BaseCrawler:
@@ -39,8 +40,48 @@ class BaseCrawler:
         self.browser.get(self.url)
         # self.browser.maximize_window()
 
+    def new_browser(self, url, option):
+        self.__init__(url=url, option=option)
+        # Move to URL
+        a = self. url
+        self.browser.get(a)
+        # self.browser.maximize_window()
+
     def move_page(self, url):
         self.browser.get(url)
+
+    def new_tab(self, new_url):
+        self.browser.switch_to.new_window('tab')
+        self.browser.get(new_url)
+        time.sleep(1)
+
+    def to_preveious_tap(self):
+        # Closing new_url tab
+        self.browser.close()
+        # Switching to old tab
+        self.browser.switch_to.window(self.browser.window_handles[0])
+
+    def to_previous_page(self):
+        self.browser.execute_script("window.history.go(-1)")
+        time.sleep(1)
+
+    def quit_browser(self):
+        # terminates driver
+        self.browser.quit()
+
+    def quick_attr_in_link(self, url, selector, attr):
+        headers = {
+            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
+        }
+        r = requests.get(url, headers=headers)
+        soup = BeautifulSoup(r.content, 'html.parser')
+        try:
+            element = soup.select(selector)[0]
+            val = element.get(attr)
+        except:
+            return False
+
+        return val
 
     def search_keyword(self, text_field: Tuple[By, str], value: str, search: Tuple[By, str]):
         element = self.browser.find_element(*text_field)
@@ -91,7 +132,6 @@ class BaseCrawler:
         return elements_str
 
 
-
     def get_text(self, button: Tuple[By, str]):
         # self.browser.find_element(*button)
 
@@ -120,25 +160,7 @@ class BaseCrawler:
             return False
         return True
 
-    def new_tab(self, new_url):
-        self.browser.switch_to.new_window('tab')
-        self.browser.get(new_url)
-        time.sleep(1)
 
-    def to_preveious_tap(self):
-        # Closing new_url tab
-        self.browser.close()
-        # Switching to old tab
-        self.browser.switch_to.window(self.browser.window_handles[0])
-
-
-
-
-
-
-    def to_previous_page(self):
-        self.browser.execute_script("window.history.go(-1)")
-        time.sleep(1)
 
     def explicit_loading(self, selector: Tuple[By, str]) -> str:
         element = WebDriverWait(self.browser, 20).until(
@@ -147,3 +169,4 @@ class BaseCrawler:
         # elem.text
 
         return element
+
