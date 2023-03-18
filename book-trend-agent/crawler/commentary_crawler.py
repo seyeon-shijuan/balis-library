@@ -1,23 +1,16 @@
 import tweepy
 import pandas as pd
 import matplotlib.pyplot as plt
-
 from tweepy import Stream
 from tweepy import OAuthHandler
 # from tweepy.streaming import StreamListener
 from tweepy.streaming import Stream
 import mysecrets
-
 import json
 
-# consumer_key ='aJ8sfZ6a7IC7fncSIGKy9YHp3'
-# consumer_secret = 'NlrLeIKPpwfKzXaJNKpNLM2dXLnxcSJWB6Xr3RYsTvqEfrBlsE'
+
 auth = tweepy.OAuthHandler(consumer_key=mysecrets.consumer_key, consumer_secret=mysecrets.consumer_secret)
 api = tweepy.API(auth)
-
-# atoken = '909765471217508354-X9qJDspMiPGGE795Y97RDF4aXdXW5uK'
-# asecret = '909765471217508354-X9qJDspMiPGGE795Y97RDF4aXdXW5uK'
-
 
 korea_geo = "%s,%s,%s" % ("35.95", "128.25", "1000km")
 
