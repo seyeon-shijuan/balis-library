@@ -106,15 +106,69 @@ class BestBooksCrawler:
 
         return page_books
 
+    def _millie_base_info(self, j, header):
+        # isbn_wrapper = 'div#wrap > section > div > div.book-content > div:nth-child(7) > div.introduction.section > div.book-info-detail.slide-container'
+        isbn_wrapper = 'div.book-info-detail.slide-container'
+        # 기본 정보
+        rank = header.select("div.book_ranking")[0].text
+        title = header.select("p.book_name")[0].text
+        writer = header.select("p.book_writer")[0].text
+        image = header.select("img")[0]['src']
+        sub_link = header.select("a")[0]['href']
+        millie_id = sub_link.split('seq=')[1]
+
+        # 책 상세정보페이지 (to get isbn link)
+        base_url = f'https://www.millie.co.kr/v3/bookdetail/{millie_id}?nav_hidden=y'
+
+        # isbn 추출 (parent select)
+        self.bookstore_crawler.new_tab(base_url)
+        soup = self.bookstore_crawler.get_soup()
+        container = soup.select(isbn_wrapper)[0]
+
+        try:
+            # ISBN이 없는 경우 AttributeError
+            isbn_container = container.find('p', string='ISBN').find_parent()
+        except AttributeError:
+            return None
+
+        isbn_tag = isbn_container.select("strong")
+        isbn_val = isbn_tag[0].text
+        self.bookstore_crawler.to_preveious_tap()
+
+        # isbn, 순위, 사이트, 제목, 작가, 이미지 수집
+        return {
+            'isbn': isbn_val,
+            'rank': rank,
+            'website': 'millie',
+            'title': title,
+            'writer': writer,
+            'image': image
+        }
+
+    def fetch_millie_best(self):
+        wrapper = 'div#bookList'
+        page_books = []
+
+        ori_element = self.bookstore_crawler.select_element(selector=wrapper)[0]
+        headers = ori_element.find_all("li", class_=None)
+        for j, header in enumerate(headers):
+            rst = self._millie_base_info(j, header)
+            print(rst)
+
+            if rst:
+                page_books.append(rst)
+
+            time.sleep(0.5)
+
+        return page_books
+
     def export_to_csv(self, in_list, outfile):
         df = pd.DataFrame.from_records(in_list)
         today = dt.datetime.now(gettz('Asia/Seoul')).today().strftime('%Y-%m-%d')
         df['date'] = today
+        df = df.drop_duplicates(subset='isbn', keep='first')
         df.to_csv(f'../outfile/rank/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
-        print(outfile+'is saved')
-
-
-
+        print(outfile+' is saved')
 
 
 def main():
@@ -127,26 +181,30 @@ def main():
     option.add_argument('disable-gpu')
     # option.add_argument('headless')
 
-    crawler = BestBooksCrawler('https://series.naver.com/ebook/home.series', option)
+    # crawler = BestBooksCrawler('https://series.naver.com/ebook/home.series', option)
 
 
     # 1. 판매량
-    # 1-1) 네이버, 교보, Yes24, 밀리의 서재, 리디북스 베스트 100 목록 수집 & CSV 추출
-    # naver_list = crawler.get_naver_best()
-    naver_list = crawler.fetch_naver_best()
+    # 1-1a) 네이버 베스트 100 목록 수집
+    # naver_list = crawler.fetch_naver_best()
 
-    # 1-2_ 네이버 파일로 쓰기
-    crawler.export_to_csv(naver_list, 'naver')
-    # df = pd.DataFrame.from_records(naver_list)
-    # today = dt.datetime.now(gettz('Asia/Seoul')).today().strftime('%Y-%m-%d')
-    # df['date'] = today
-    # outfile = 'naver'
-    # df.to_csv(f'../outfile/rank/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
+    # 1-1b) 네이버 CSV 파일로 쓰기
+    # crawler.export_to_csv(naver_list, 'naver')
 
-
-    # # 새 브라우저
+    # 1-2a) 밀리의 서재 베스트 100 목록 수집
     # crawler.bookstore_crawler.quit_browser()
-    # crawler.bookstore_crawler.new_browser('https://www.naver.com/', option)
+    # crawler.bookstore_crawler.new_browser('https://www.millie.co.kr/viewfinder/more_milliebest.html?range=week&referrer=best', option)
+    millie_link = 'https://www.millie.co.kr/viewfinder/more_milliebest.html?range=week&referrer=best'
+
+    crawler = BestBooksCrawler(millie_link, option)
+    millie_list = crawler.fetch_millie_best()
+
+    # 1-2b) 밀리의 서재 CSV 파일로 쓰기
+    crawler.export_to_csv(millie_list, 'millie')
+
+    a = 0
+
+
 
 
     
