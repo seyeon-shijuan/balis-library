@@ -35,24 +35,46 @@ import requests
 #         json.dump(json_str, outfile)
 
 
-def parse_test01():
-    tmp_header = {
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
-    }
-    url = 'https://search.shopping.naver.com/book/catalog/37350394621'
-    isbn_page_parent = '#book_section-info > div.bookBasicInfo_basic_info__HCWyr > ul'
-    r = requests.get(url, headers=tmp_header)
-    soup = BeautifulSoup(r.content, 'html.parser')
-    try:
-        tmp = soup.select(isbn_page_parent)
-        element = tmp[0]
-        # element = soup.select(selector)[0]
-        p = 0
-    except:
-        return False
+# def parse_test01():
+#     tmp_header = {
+#         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
+#     }
+#     url = 'https://search.shopping.naver.com/book/catalog/37350394621'
+#     isbn_page_parent = '#book_section-info > div.bookBasicInfo_basic_info__HCWyr > ul'
+#     r = requests.get(url, headers=tmp_header)
+#     soup = BeautifulSoup(r.content, 'html.parser')
+#     try:
+#         tmp = soup.select(isbn_page_parent)
+#         element = tmp[0]
+#         # element = soup.select(selector)[0]
+#         p = 0
+#     except:
+#         return False
+
+
+def test02():
+    import requests
+    from bs4 import BeautifulSoup
+
+    url = "https://search.kyobobook.co.kr/web/search?vPstrKeyWord=klover&orderClick=LAG"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # 상세 도서 페이지 링크 추출
+    book_link = soup.select_one("div.title a").get("href")
+    book_response = requests.get(book_link)
+    book_soup = BeautifulSoup(book_response.text, "html.parser")
+
+    # Klover 리뷰 크롤링
+    klover_reviews = book_soup.select("div.tab_con div.box_detail_review div.review_cont")
+
+    for review in klover_reviews:
+        print(review.text.strip())
+
 
 
 if __name__ == '__main__':
     # test_agent()
     # test01()
-    parse_test01()
+    # parse_test01()
+    test02()
