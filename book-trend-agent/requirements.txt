@@ -40,7 +40,6 @@ jsonschema==4.17.3
 kiwisolver==1.4.4
 lxml==4.9.2
 MarkupSafe==2.1.2
-matplotlib==3.6.3
 multidict==6.0.4
 multiprocess==0.70.12.2
 networkx==3.0
