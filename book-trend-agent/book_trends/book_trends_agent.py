@@ -1,18 +1,15 @@
-# from selenium import webdriver
-# from selenium.webdriver.chrome.service import Service
-# from webdriver_manager.chrome import ChromeDriverManager
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as EC
-# from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
 import time
-from typing import Tuple
+
+from book_trends.review_crawler import ReviewCrawler
+from book_trends.twitter_crawler import TwitterCrawler
+from crawler import mysecrets
 from crawler.base_crawler import BaseCrawler
 import pandas as pd
 import datetime as dt
 from dateutil.tz import gettz
-
+import os
+import numpy as np
 
 class BestBooksCrawler:
     def __init__(self, url: str, option: Options):
@@ -170,6 +167,23 @@ class BestBooksCrawler:
         df.to_csv(f'../outfile/rank/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
         print(outfile+' is saved')
 
+    @staticmethod
+    def get_bestseller_list(df1, df2) -> list:
+        merged_df = df1.append(df2, sort=True, ignore_index=True)
+        df2 = merged_df[['title']]
+        df3 = df2.drop_duplicates(subset=None, keep='first', inplace=False, ignore_index=False)
+        df3 = df3.sort_values(by='title').reset_index(drop=True)
+        # rst = df3.values.tolist()
+        rst = df3['title'].tolist()
+        return rst
+
+
+def select_image(col1, col2):
+    if pd.isna(col1):
+        return col2
+    else:
+        col1
+
 
 def main():
 
@@ -182,50 +196,95 @@ def main():
     # option.add_argument('headless')
 
     # crawler = BestBooksCrawler('https://series.naver.com/ebook/home.series', option)
-
-
-    # 1. 판매량
-    # 1-1a) 네이버 베스트 100 목록 수집
+    #
+    today = dt.datetime.now(gettz('Asia/Seoul')).today().strftime('%Y-%m-%d')
+    directory = f"../outfile/rank/trending_{today}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    #
+    #
+    # # 1. 판매량
+    # # 1-1a) 네이버 베스트 100 목록 수집
     # naver_list = crawler.fetch_naver_best()
-
-    # 1-1b) 네이버 CSV 파일로 쓰기
-    # crawler.export_to_csv(naver_list, 'naver')
-
-    # 1-2a) 밀리의 서재 베스트 100 목록 수집
+    #
+    # # 1-1b) 네이버 CSV 파일로 쓰기
+    # crawler.export_to_csv(naver_list, f'trending_{today}/naver')
+    #
+    # # 1-2a) 밀리의 서재 베스트 100 목록 수집
     # crawler.bookstore_crawler.quit_browser()
     # crawler.bookstore_crawler.new_browser('https://www.millie.co.kr/viewfinder/more_milliebest.html?range=week&referrer=best', option)
-    millie_link = 'https://www.millie.co.kr/viewfinder/more_milliebest.html?range=week&referrer=best'
+    # # millie_link = 'https://www.millie.co.kr/viewfinder/more_milliebest.html?range=week&referrer=best'
+    # # crawler = BestBooksCrawler(millie_link, option)
+    #
+    # millie_list = crawler.fetch_millie_best()
+    #
+    # # 1-2b) 밀리의 서재 CSV 파일로 쓰기
+    # crawler.export_to_csv(millie_list, f'trending_{today}/millie')
 
-    crawler = BestBooksCrawler(millie_link, option)
-    millie_list = crawler.fetch_millie_best()
+    # Best 도서 리스트 추출
+    # naver_df = pd.read_csv(f'{directory}/naver_{today}.csv', encoding='utf-8-sig')
+    # millie_df = pd.read_csv(f'{directory}/millie_{today}.csv', encoding='utf-8-sig')
+    # bestseller_list = BestBooksCrawler.get_bestseller_list(naver_df, millie_df)
 
-    # 1-2b) 밀리의 서재 CSV 파일로 쓰기
-    crawler.export_to_csv(millie_list, 'millie')
-
-    a = 0
-
-
-
-
-    
-    # 1-2) CSV DB로 적재
-    # isbn / title / website / sales_rank / interest(관심도) /
 
     # 2. 관심도
-    # 2-1) 트위터 최근 7일내 해당 도서 언급량 수집
-
-    # 2-2) CSV 추출 및 DB로 적재
+    # 2-1) 트위터 최근 7일내 해당 도서 언급량 수집 & CSV 추출
     # title / text / created_at / retweet_count / favorite_count
+    # twitter_crawler = TwitterCrawler(mysecrets.consumer_key, mysecrets.consumer_secret)
+    # search_list = ['created_at', 'text', 'retweet_count', 'favorite_count']
+    # twitter_crawler.run_crawler(search_list, bestseller_list)
 
-    # 2-3) 네이버 리뷰 수집
-
-    # 2-4) CSV 추출 및 DB로 적재
+    # 2-2) 교보문고 리뷰 수집 & CSV 추출
     # title / text / created_at
+    # setup
+    # option = Options()
+    # option.add_argument("disable-infobars")
+    # option.add_argument("disable-extensions")
+    # # option.add_argument("start-maximized")
+    # option.add_argument('disable-gpu')
+    # # option.add_argument('headless')
+    #
+    # target = 'https://ebook.kyobobook.co.kr/dig/pnd/welcome'
+    # kyobo_review_crawler = ReviewCrawler(target, option)
+    #
+    # kyobo_review_crawler.run_crawler(bestseller_list)
+
 
     # 3. 점수 계산
-    # Distinct Value Filter 하여 DB의 score table 에 Insert
-    # 관심량 : 트윗 count x 1로 normalize + 네이버 리뷰 count x 1로 normalize
     # 판매량 : 도서의 각 사이트별 순위를 모두 더한 뒤 x 1로 normalize
+    n_df = pd.read_csv(f'{directory}/naver_{today}.csv', encoding='utf-8-sig')
+    m_df = pd.read_csv(f'{directory}/millie_{today}.csv', encoding='utf-8-sig')
+
+
+    n_df['point'] = n_df.apply(lambda x: np.subtract(101, x['rank']), axis=1)
+    m_df['point'] = m_df.apply(lambda x: np.subtract(101, x['rank']), axis=1)
+    m_df = m_df.drop_duplicates(['title'], keep='first')
+
+    # outer join
+    nm_df = pd.merge(n_df, m_df, how='outer', on='title')
+    ft_df = nm_df[['isbn_x', 'isbn_y', 'title', 'writer_x', 'image_x', 'image_y', 'point_x','point_y']]
+    ft_df['point_x'] = ft_df['point_x'].replace(np.nan, 0)
+    ft_df['point_y'] = ft_df['point_y'].replace(np.nan, 0)
+    ft_df['total'] = ft_df.apply(lambda x: np.add(x['point_x'], x['point_y']), axis=1)
+
+    ft_df['image'] = ft_df.apply(lambda x: x['image_y'] if x['image_x'] is np.nan else x['image_x'], axis=1)
+    final_df = ft_df[['isbn_x','isbn_y','title','writer_x','point_x','point_y','total','image']]
+    final_df.columns = ['isbn_n','isbn_m','title','writer','point_n','point_m','total','image']
+    final_df = final_df.sort_values(by='total', ascending=False)
+    final_df = final_df.reset_index(drop=True)
+    final_df.index = np.arange(1, len(final_df) + 1)
+
+    final_df['isbn_n'] = final_df['isbn_n'].astype(str).replace('\.\d+', '', regex=True)
+
+
+    output = 'final_score'
+    final_df.to_csv(f'../outfile/rank/trending_{today}/{output}_{today}.csv', mode='w', index=True, header=True, encoding='utf-8-sig')
+    print(output + ' is saved')
+
+
+
+    # 관심량 : 트윗 count x 1로 normalize + 네이버 리뷰 count x 1로 normalize
+
     # 총 점수 : 관심량 x 0.6 + 판매량 x 0.4로 계산
 
     # 3-1)

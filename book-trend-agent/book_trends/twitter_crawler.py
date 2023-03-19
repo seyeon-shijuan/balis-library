@@ -45,7 +45,7 @@ class TwitterCrawler:
         df = pd.DataFrame.from_records(in_list)
         today = dt.datetime.now(gettz('Asia/Seoul')).today().strftime('%Y-%m-%d')
         df['date'] = today
-        df.to_csv(f'../outfile/rank/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
+        df.to_csv(f'../outfile/rank/trending_{today}/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
         print(outfile+' is saved')
 
     def run_crawler(self, to_search: list, keywords: list) -> None:
@@ -65,9 +65,9 @@ class TwitterCrawler:
 
 
 
-if __name__ == '__main__':
-
-    twitter_crawler = TwitterCrawler(mysecrets.consumer_key, mysecrets.consumer_secret)
-    search_list = ['created_at', 'text', 'retweet_count', 'favorite_count']
-    keyword_list = ['구의 증명', '사라진 여자들', '김미경의 마흔 수업']
-    twitter_crawler.run_crawler(search_list, keyword_list)
+# if __name__ == '__main__':
+#
+#     twitter_crawler = TwitterCrawler(mysecrets.consumer_key, mysecrets.consumer_secret)
+#     search_list = ['created_at', 'text', 'retweet_count', 'favorite_count']
+#     keyword_list = ['구의 증명', '사라진 여자들', '김미경의 마흔 수업']
+#     twitter_crawler.run_crawler(search_list, keyword_list)

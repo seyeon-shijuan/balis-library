@@ -30,12 +30,17 @@ class ReviewCrawler:
         if not self.bookstore_crawler.check_exists((By.CSS_SELECTOR, to_click)):
             return None
 
-        self.bookstore_crawler.click_button((By.CSS_SELECTOR, to_click))
+        time.sleep(1)
+        try:
+            self.bookstore_crawler.click_button((By.CSS_SELECTOR, to_click))
+        except:
+            try:
+                self.bookstore_crawler.click_button((By.CSS_SELECTOR, '.prod_img_load'))
+            except:
+                return None
 
         return True
-        # to_scrap = 'div#kloverContents'
-        # wrapper = self.bookstore_crawler.select_element(to_scrap)[0]
-        # return wrapper
+
 
 
     def get_reviews(self, title):
@@ -45,8 +50,10 @@ class ReviewCrawler:
         try:
             # 불일치 도서 (ex 학술논문 등)
             wrapper = self.bookstore_crawler.select_element(to_scrap)[0]
+            # 동일한 도서인데 제목이 불일치하는 경우 처리 필요?
         except:
             return None
+
         elements = [child for child in wrapper.contents if child != '\n']
 
         for elem in elements:
@@ -61,22 +68,6 @@ class ReviewCrawler:
             values['text'] = final_txt
             ori_dict.update(values)
             value_list.append(ori_dict)
-            p = 0
-
-
-
-        # for header in headers:
-        #     if 2 > len(header):
-        #         continue
-        #     values = {}
-        #     ori_dict = {'title': title}
-        #     values['created_at'] = header.select('span.info_item')[0].text
-        #     # values['created_at'] = values['created_at'].strftime('%Y-%m-%d')
-        #     text = header.select('div.comment_text')[0].text
-        #     values['text'] = text.replace('\n', " ")
-        #     # values['text'] = values['text'].replace("\n", " ")
-        #     ori_dict.update(values)
-        #     value_list.append(ori_dict)
 
         return value_list
 
@@ -85,7 +76,7 @@ class ReviewCrawler:
         df = pd.DataFrame.from_records(in_list)
         today = dt.datetime.now(gettz('Asia/Seoul')).today().strftime('%Y-%m-%d')
         df['date'] = today
-        df.to_csv(f'../outfile/rank/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
+        df.to_csv(f'../outfile/rank/trending_{today}/{outfile}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
         print(outfile+' is saved')
 
     def run_crawler(self, keywords: list) -> None:
@@ -110,19 +101,18 @@ class ReviewCrawler:
 
 
 
-if __name__ == '__main__':
-    # setup
-    option = Options()
-    option.add_argument("disable-infobars")
-    option.add_argument("disable-extensions")
-    # option.add_argument("start-maximized")
-    option.add_argument('disable-gpu')
-    # option.add_argument('headless')
-
-    target = 'https://ebook.kyobobook.co.kr/dig/pnd/welcome'
-    kyobo_review_crawler = ReviewCrawler(target, option)
-
-    # search_list = ['created_at', 'text']
-    keyword_list = ['구의 증명', '사라진 여자들', '김미경의 마흔 수업']
-
-    kyobo_review_crawler.run_crawler(keyword_list)
+# if __name__ == '__main__':
+#     # setup
+#     option = Options()
+#     option.add_argument("disable-infobars")
+#     option.add_argument("disable-extensions")
+#     # option.add_argument("start-maximized")
+#     option.add_argument('disable-gpu')
+#     # option.add_argument('headless')
+#
+#     target = 'https://ebook.kyobobook.co.kr/dig/pnd/welcome'
+#     kyobo_review_crawler = ReviewCrawler(target, option)
+#
+#     keyword_list = ['구의 증명', '사라진 여자들', '김미경의 마흔 수업']
+#
+#     kyobo_review_crawler.run_crawler(keyword_list)
