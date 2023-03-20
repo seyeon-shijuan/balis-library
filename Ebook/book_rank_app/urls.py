@@ -2,11 +2,10 @@
 from django.urls import path, include
 from . import views
 
-app_name = 'articles'
+app_name = 'book_rank_app'
 
 urlpatterns = [
-    path('', views.article_list, name="list"),
-    path('create', views.article_create, name="create"),
-    # create/ 하면 이렇게만 써야됨.. 어떤게 맞는지 모르겠다.
-    path('slug/<str:slug>', views.article_details, name="detail"),
+    path('', views.homepage, name="homepage"),
+    # path('create', views.article_create, name="create"),
+    # path('slug/<str:slug>', views.article_details, name="detail"),
 ]
