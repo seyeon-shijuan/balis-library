@@ -188,13 +188,16 @@ class BestBooksCrawler:
 
         # outer join
         nm_df = pd.merge(n_df, m_df, how='outer', on='title')
-        ft_df = nm_df[['isbn_x', 'isbn_y', 'title', 'writer_x', 'image_x', 'image_y', 'point_x', 'point_y']]
+        ft_df = nm_df[['isbn_x', 'isbn_y', 'title', 'writer_x', 'writer_y', 'image_x', 'image_y', 'point_x', 'point_y']]
         ft_df['point_x'] = ft_df['point_x'].replace(np.nan, 0)
         ft_df['point_y'] = ft_df['point_y'].replace(np.nan, 0)
+
         ft_df['rank_total'] = ft_df.apply(lambda x: np.add(x['point_x'], x['point_y']), axis=1)
 
         ft_df['image'] = ft_df.apply(lambda x: x['image_y'] if x['image_x'] is np.nan else x['image_x'], axis=1)
-        final_df = ft_df[['isbn_x', 'isbn_y', 'title', 'writer_x', 'point_x', 'point_y', 'rank_total', 'image']]
+        ft_df['writer'] = ft_df.apply(lambda x: x['writer_x'] if x['writer_y'] is np.nan else x['writer_y'], axis=1)
+
+        final_df = ft_df[['isbn_x', 'isbn_y', 'title', 'writer', 'point_x', 'point_y', 'rank_total', 'image']]
         final_df.columns = ['isbn_n', 'isbn_m', 'title', 'writer', 'point_n', 'point_m', 'rank_total', 'image']
         final_df = final_df.sort_values(by='rank_total', ascending=False)
         final_df = final_df.reset_index(drop=True)
@@ -341,20 +344,21 @@ def main():
 
 
     all_in_one = pd.merge(rank, commentary, how='outer', on='title')
-
+    all_in_one = all_in_one.fillna(0)
     a_df = all_in_one[['isbn_n','isbn_m','title','writer','image','rank_total','commentary_total']]
 
-    for col in a_df.columns:
-        if col == 'title':
-            continue
+    to_normalize = ['rank_total', 'commentary_total']
 
-        commentary_df[col + '_nz'] = BestBooksCrawler.absolute_maximum_scale(commentary_df[col])
+    for col in to_normalize:
+        a_df[col + '_nz'] = BestBooksCrawler.absolute_maximum_scale(a_df[col])
 
-    commentary_df['commentary_total'] = commentary_df.apply(lambda x: np.add(x['retweet_count_nz'], x['created_at_nz']), axis=1)
-    commentary_df = commentary_df.sort_values(by='commentary_total', ascending=False).reset_index(drop=True)
+    a_df['final_score_nz'] = a_df.apply(lambda x: np.add((x['rank_total_nz'] * 0.4), (x['commentary_total_nz'] * 0.6)), axis=1)
+    a_df = a_df.sort_values(by='final_score_nz', ascending=False).reset_index(drop=True)
+    a_df.index = np.arange(1, len(a_df) + 1)
 
-
-    a = 0
+    output = 'trending_books'
+    a_df.to_csv(f'../outfile/rank/trending_{today}/{output}_{today}.csv', mode='w', index=False, header=True, encoding='utf-8-sig')
+    print(output + ' is saved')
 
 
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main</title>
+</head>
+<body>
+    This is main page.
+    <br>
+    {% if user.user_id != None %}
+    <a href="{% url 'user_app:logout' %}" >{{ user.user_name }} 로그아웃</a>
+    <a href="{% url 'user_app:mypage' %}" >마이페이지</a>
+    
+    {% else %}
+    <a href="{% url 'user_app:login' %}" >로그인</a>
+    <a href="{% url 'user_app:join' %}" >회원가입</a>
+    {% endif %}
+</body>
+</html>
