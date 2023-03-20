@@ -30,9 +30,12 @@ urlpatterns = [
     path('users/', include('user_app.urls')),
     path('admin/', admin.site.urls),
 
+    path('trendings/', include('trend_book_app.urls')),
+
     # 혜진님 진입점
     path('', include('book_rank_app.urls')),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
+# urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
