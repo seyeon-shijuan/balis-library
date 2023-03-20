@@ -1,3 +1,4 @@
+from dateutil.relativedelta import relativedelta
 from selenium.webdriver.chrome.options import Options
 import time
 
@@ -10,6 +11,7 @@ import datetime as dt
 from dateutil.tz import gettz
 import os
 import numpy as np
+
 
 class BestBooksCrawler:
     def __init__(self, url: str, option: Options):
@@ -177,12 +179,66 @@ class BestBooksCrawler:
         rst = df3['title'].tolist()
         return rst
 
+    @staticmethod
+    def make_rank_final_score(n_df, m_df):
 
-def select_image(col1, col2):
-    if pd.isna(col1):
-        return col2
-    else:
-        col1
+        n_df['point'] = n_df.apply(lambda x: np.subtract(101, x['rank']), axis=1)
+        m_df['point'] = m_df.apply(lambda x: np.subtract(101, x['rank']), axis=1)
+        m_df = m_df.drop_duplicates(['title'], keep='first')
+
+        # outer join
+        nm_df = pd.merge(n_df, m_df, how='outer', on='title')
+        ft_df = nm_df[['isbn_x', 'isbn_y', 'title', 'writer_x', 'image_x', 'image_y', 'point_x', 'point_y']]
+        ft_df['point_x'] = ft_df['point_x'].replace(np.nan, 0)
+        ft_df['point_y'] = ft_df['point_y'].replace(np.nan, 0)
+        ft_df['rank_total'] = ft_df.apply(lambda x: np.add(x['point_x'], x['point_y']), axis=1)
+
+        ft_df['image'] = ft_df.apply(lambda x: x['image_y'] if x['image_x'] is np.nan else x['image_x'], axis=1)
+        final_df = ft_df[['isbn_x', 'isbn_y', 'title', 'writer_x', 'point_x', 'point_y', 'rank_total', 'image']]
+        final_df.columns = ['isbn_n', 'isbn_m', 'title', 'writer', 'point_n', 'point_m', 'rank_total', 'image']
+        final_df = final_df.sort_values(by='rank_total', ascending=False)
+        final_df = final_df.reset_index(drop=True)
+        final_df.index = np.arange(1, len(final_df) + 1)
+
+        final_df['isbn_n'] = final_df['isbn_n'].astype(str).replace('\.\d+', '', regex=True)
+
+        return final_df
+
+    @staticmethod
+    def absolute_maximum_scale(series):
+        return series / series.abs().max()
+
+    @staticmethod
+    def normalize_twitter(t_df):
+        t_grouped = t_df.groupby('title')[['retweet_count']].count()
+        return t_grouped
+
+    @staticmethod
+    def normalize_kyobo(k_df, today):
+        tmp = today.split('-')
+        tmp = list(map(int, tmp))
+        today_date = dt.datetime(tmp[0], tmp[1], tmp[2])
+        month_ago_date = today_date + relativedelta(months=-3)
+        month_ago = str(month_ago_date.date())
+        k_grouped = k_df[k_df['created_at'] > month_ago][['title', 'created_at']].groupby('title').count()
+        return k_grouped
+
+    @staticmethod
+    def make_commentary_final_score(t_grouped, k_grouped):
+        commentary_df = pd.merge(t_grouped, k_grouped, how='outer', on='title')
+        commentary_df = commentary_df.fillna(0)
+        commentary_df.reset_index(inplace=True)
+
+        for col in commentary_df.columns:
+            if col == 'title':
+                continue
+
+            commentary_df[col + '_nz'] = BestBooksCrawler.absolute_maximum_scale(commentary_df[col])
+
+        commentary_df['commentary_total'] = commentary_df.apply(lambda x: np.add(x['retweet_count_nz'], x['created_at_nz']), axis=1)
+        commentary_df = commentary_df.sort_values(by='commentary_total', ascending=False).reset_index(drop=True)
+
+        return commentary_df
 
 
 def main():
@@ -252,42 +308,53 @@ def main():
 
     # 3. 점수 계산
     # 판매량 : 도서의 각 사이트별 순위를 모두 더한 뒤 x 1로 normalize
-    n_df = pd.read_csv(f'{directory}/naver_{today}.csv', encoding='utf-8-sig')
-    m_df = pd.read_csv(f'{directory}/millie_{today}.csv', encoding='utf-8-sig')
+    # n_df = pd.read_csv(f'{directory}/naver_{today}.csv', encoding='utf-8-sig')
+    # m_df = pd.read_csv(f'{directory}/millie_{today}.csv', encoding='utf-8-sig')
+    #
+    # final_df = BestBooksCrawler.make_rank_final_score(n_df, m_df)
+    #
+    # output = 'final_rank_score'
+    # final_df.to_csv(f'../outfile/rank/trending_{today}/{output}_{today}.csv', mode='w', index=True, header=True, encoding='utf-8-sig')
+    # print(output + ' is saved')
 
 
-    n_df['point'] = n_df.apply(lambda x: np.subtract(101, x['rank']), axis=1)
-    m_df['point'] = m_df.apply(lambda x: np.subtract(101, x['rank']), axis=1)
-    m_df = m_df.drop_duplicates(['title'], keep='first')
-
-    # outer join
-    nm_df = pd.merge(n_df, m_df, how='outer', on='title')
-    ft_df = nm_df[['isbn_x', 'isbn_y', 'title', 'writer_x', 'image_x', 'image_y', 'point_x','point_y']]
-    ft_df['point_x'] = ft_df['point_x'].replace(np.nan, 0)
-    ft_df['point_y'] = ft_df['point_y'].replace(np.nan, 0)
-    ft_df['total'] = ft_df.apply(lambda x: np.add(x['point_x'], x['point_y']), axis=1)
-
-    ft_df['image'] = ft_df.apply(lambda x: x['image_y'] if x['image_x'] is np.nan else x['image_x'], axis=1)
-    final_df = ft_df[['isbn_x','isbn_y','title','writer_x','point_x','point_y','total','image']]
-    final_df.columns = ['isbn_n','isbn_m','title','writer','point_n','point_m','total','image']
-    final_df = final_df.sort_values(by='total', ascending=False)
-    final_df = final_df.reset_index(drop=True)
-    final_df.index = np.arange(1, len(final_df) + 1)
-
-    final_df['isbn_n'] = final_df['isbn_n'].astype(str).replace('\.\d+', '', regex=True)
-
-
-    output = 'final_score'
-    final_df.to_csv(f'../outfile/rank/trending_{today}/{output}_{today}.csv', mode='w', index=True, header=True, encoding='utf-8-sig')
-    print(output + ' is saved')
-
-
-
-    # 관심량 : 트윗 count x 1로 normalize + 네이버 리뷰 count x 1로 normalize
+    # 관심량 : 트윗 count x 1로 normalize + 교보 리뷰 count x 1로 normalize
+    # # 1. tweet
+    # t_df = pd.read_csv(f'{directory}/weekly_tweets_{today}.csv', encoding='utf-8-sig')
+    # t_grouped = BestBooksCrawler.normalize_twitter(t_df)
+    #
+    # # 2. kyobo
+    # k_df = pd.read_csv(f'{directory}/weekly_reviews_{today}.csv', encoding='utf-8-sig')
+    # k_grouped = BestBooksCrawler.normalize_kyobo(k_df, today)
+    #
+    # # 3. tweet, kyobo 각각 normalize후 총점 계산
+    # commentary_df = BestBooksCrawler.make_commentary_final_score(t_grouped, k_grouped)
+    # output = 'final_commentary_score'
+    # commentary_df.to_csv(f'../outfile/rank/trending_{today}/{output}_{today}.csv', mode='w', index=True, header=True, encoding='utf-8-sig')
+    # print(output + ' is saved')
 
     # 총 점수 : 관심량 x 0.6 + 판매량 x 0.4로 계산
+    rank = pd.read_csv(f'{directory}/final_rank_score_{today}.csv', encoding='utf-8-sig',
+                       dtype={'isbn_n': str, 'isbn_m': str, 'title': str}, index_col=0)
+    commentary = pd.read_csv(f'{directory}/final_commentary_score_{today}.csv', encoding='utf-8-sig',
+                       dtype={'isbn_n': str, 'isbn_m': str, 'title': str}, index_col=0)
 
-    # 3-1)
+
+    all_in_one = pd.merge(rank, commentary, how='outer', on='title')
+
+    a_df = all_in_one[['isbn_n','isbn_m','title','writer','image','rank_total','commentary_total']]
+
+    for col in a_df.columns:
+        if col == 'title':
+            continue
+
+        commentary_df[col + '_nz'] = BestBooksCrawler.absolute_maximum_scale(commentary_df[col])
+
+    commentary_df['commentary_total'] = commentary_df.apply(lambda x: np.add(x['retweet_count_nz'], x['created_at_nz']), axis=1)
+    commentary_df = commentary_df.sort_values(by='commentary_total', ascending=False).reset_index(drop=True)
+
+
+    a = 0
 
 
 
