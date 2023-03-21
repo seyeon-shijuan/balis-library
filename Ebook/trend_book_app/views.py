@@ -43,6 +43,18 @@ def trends_list(request):
     return render(request, 'trend_book_app/trends-component.html', {'books': book_list})
 
 
+def trends_all(request):
+    # trends = TrendingBooks.objects.get()
+    # trends = TrendingBooks.objects.all()
+    query = "select id, weekly_rank, isbn_n, isbn_m, title, writer, image from trend_book_app_trendingbooks"
+    books = TrendingBooks.objects.raw(query)
+    book_list = []
+    for book in TrendingBooks.objects.raw(query):
+        # print(book)
+        book_list.append(book)
+
+    return render(request, 'trend_book_app/trends_all.html', {'books': book_list})
+
 
 # def article_list(request):
 #     # articles = Article.objects.all().order_by('date');
