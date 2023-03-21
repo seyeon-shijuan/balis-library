@@ -33,10 +33,12 @@ img {
 div {
     display: block;
 }
-
+/*HERE!!!*/
 .prod_list {
-    padding-top: 30px;
-    border-top: 1px solid #d5d5d5;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /*border-top: 1px solid #d5d5d5;*/
+    border-bottom: 1px solid #d5d5d5;
     font-size: 15px;
 }
 
@@ -59,7 +61,9 @@ div {
 }
 
 .view_type_list .prod_list .prod_item .prod_area {
-    max-width: 674px;
+    /*max-width: 674px;*/
+    margin: 10 10 10 10px;
+
 }
 
 .view_type_list .prod_list .prod_item .prod_area {
@@ -113,13 +117,19 @@ div {
     height: 100%;
 }
 
+/*이미지 색 변경*/
 .prod_area .prod_thumb_box .img_box {
     overflow: hidden;
     position: relative;
     display: block;
     box-sizing: border-box;
-    border: 1px solid #eaeaea;
+    border: 1px solid #333333;
+    text-align: center;
+    /*background: #333333;*/
+    background: white;
 }
+
+.imageblock { max-width: 100%; height: auto; border:1px solid #eaeaea; padding: 0px; }
 
 .prod_area.horizontal .prod_thumb_box.size_lg .img_box img {
     max-height: calc((142px - 2px) * 1.618 - 10px);
@@ -153,7 +163,8 @@ div {
     -webkit-line-clamp: inherit;
 }
 .prod_area .prod_info_box .prod_author, .prod_area .prod_info_box .prod_author a, .prod_area .prod_info_box .prod_last_update, .prod_area .prod_info_box .prod_last_update a, .prod_area .prod_info_box .popular_prod_name, .prod_area .prod_info_box .popular_prod_name a {
-    color: #595959;
+    /*color: #595959;*/
+    color: #898989;
 }
 
 .prod_area .prod_info_box .prod_price .price {
@@ -241,7 +252,8 @@ div {
     font-size: 20px;
     line-height: 35px;
     letter-spacing: -0.01em;
-    font-weight: 700;
+    font-weight: 600;
+    color: white;
 }
 
 .prod_area.horizontal .prod_info_box .prod_rank {
@@ -294,6 +306,28 @@ div {
 
 .badge_light_gray {
     color: #fff;
-    background: #767676;
-    border: 1px solid #767676;
+    /*background: #767676;*/
+    background: #FFED00;
+    border: 1px solid #FFED00;
+}
+
+.sy-text {
+    color: #595757;
+}
+
+/* articles */
+
+div.articles {
+    background-color: hsla(0,0%,95%,.13);
+    width: 80%;
+    margin: 0 auto;
+}
+
+
+#prod_item_each {
+    /*background: white;*/
+    background-color: hsla(0,0%,80%,.0);
+    margin: 0 auto;
+
+
 }

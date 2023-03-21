@@ -4,6 +4,12 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'trend_book_app/TrendingBooksDetail.css' %}">
 <div class="articles">
+    <div style="background-color: #1E1E1E; padding-bottom: 20px;">
+        <h2 style="color:#31B9CC; margin-bottom: 10px;">요즘 뜨는 도서 TOP 100</h2>
+        <p style="color:white; font-size:small;">발리에서 요즘 뜨는 도서를 추천해드려요.</p>
+        <p style="color:white; font-size:x-small;">매 주 EBOOK 사이트의 주간 판매량과 인터넷의 도서 언급량을 반영해 점수를 산정해요.</p>
+
+    </div>
 
     {% for book in books %}
 <!--        <p>{{ book.weekly_rank }} {{ book.title }} {{ book.writer }}</p>-->
@@ -11,11 +17,11 @@
     <div class="view_type_list switch_prod_wrap">
         <ol class="prod_list">
           <li class="prod_item" data-id="S000200746091">
-            <div class="prod_area horizontal">
+            <div id="prod_item_each"  class="prod_area horizontal">
               <div class="prod_thumb_box size_lg">
                 <a class="prod_link" href="https://product.kyobobook.co.kr/detail/S000200746091">
                   <span class="img_box">
-                    <img data-kbbfn="s3-image" loading="lazy" alt="S000200746091" src="{{ book.image }}" data-src="https://contents.kyobobook.co.kr/sih/fit-in/142x0/pdt/9791168473690.jpg">
+                    <img class = "imageblock" data-kbbfn="s3-image" loading="lazy" alt="S000200746091" src="{{ book.image }}" data-src="https://contents.kyobobook.co.kr/sih/fit-in/142x0/pdt/9791168473690.jpg">
                   </span>
                 </a>
               </div>
