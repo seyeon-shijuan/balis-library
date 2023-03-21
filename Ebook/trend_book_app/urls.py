@@ -6,6 +6,8 @@ app_name = 'trend_book_app'
 urlpatterns = [
     path('', views.main, name="main"),
     path('trends', views.trends_list, name='trends-list'),
+
+
     path('all', views.trends_all, name='trends-all')
 
 

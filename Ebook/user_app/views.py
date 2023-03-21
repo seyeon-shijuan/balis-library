@@ -13,8 +13,8 @@ def init(request) :
     if user_id :
         user = User.objects.get(user_id = user_id)
         content = {'user' : user}
-        return render(request, 'user_app/trends-main.html', content)
-    return render(request, 'user_app/trends-main.html')
+        return render(request, 'user_app/main.html', content)
+    return render(request, 'user_app/main.html')
 
 def join(request) :
     if request.method == 'POST' :
@@ -57,7 +57,7 @@ def login(request) :
                 request.session['user'] = checkUser.user_id
                 context['message'] = checkUser.user_name + '님 반갑습니다.'
                 return HttpResponseRedirect(reverse('user_app:home'))
-                # return render(request, 'user_app/trends-main.html')
+                # return render(request, 'user_app/main.html')
             else :
                 context['message'] = "password가 일치하지 않습니다."
                 return render(request, 'user_app/login.html', context)

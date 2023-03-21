@@ -15,22 +15,35 @@
 
 
             <div class="base_img_container">
-                <img class="base_logo" src="{% static 'logo.png' %}">
+                <a href="/">
+                    <img class="base_logo" src="{% static 'logo.png' %}">
+                </a>
             </div>
             {% if user.is_authenticated%}
                 <nav class="base_login_wrapper">
                     <ul class="base_login_buttons_container">
                         <li>
                             <span style="color:white; font-size: x-small; margin-right: 5px;">반갑습니다, {{ user.username }}님 !</span>
-                            <span style="color:white; font-size: x-small;">logout</span>
+                            <span style="color:white; font-size: x-small;">
+                                <a href="{% url 'user_app:logout' %}" >logout</a>
+                            </span>
                         </li>
                     </ul>
                 </nav>
             {% else %}
                 <nav class="base_login_wrapper">
                     <ul class="base_login_buttons_container">
-                        <li class="idk"><img class="base_login_btn_left" src="{% static 'login_btn.png' %}"></li>
-                        <li class="idk"><img class="base_login_btn_right" src="{% static 'signup_btn.png' %}"></li>
+                        <li class="idk">
+                            <a href="{% url 'user_app:login' %}" >
+                                <img class="base_login_btn_left" src="{% static 'login_btn.png' %}">
+                            </a>
+
+                        </li>
+                        <li class="idk">
+                            <a href="{% url 'user_app:join' %}" >
+                                <img class="base_login_btn_right" src="{% static 'signup_btn.png' %}">
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             {% endif %}

@@ -30,6 +30,23 @@ def main(request):
     return render(request, 'trend_book_app/trends-main.html', {'books': context})
 
 
+def get_main_trends():
+    query = "select id, weekly_rank, isbn_n, isbn_m, title, writer, image from trend_book_app_trendingbooks limit 6"
+
+    book_list = []
+    for book in TrendingBooks.objects.raw(query):
+        # print(book)
+        book_list.append(book)
+
+    no = [x + 1 for x in range(len(book_list))]
+    # zip_list = zip(no, book_list)
+    # context = {'books': zip_list}
+    context = []
+    for key, value in zip(no, book_list):
+        context.append((key, value))
+
+    return context
+
 def trends_list(request):
     # trends = TrendingBooks.objects.get()
     # trends = TrendingBooks.objects.all()

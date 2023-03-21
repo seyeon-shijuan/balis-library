@@ -124,8 +124,11 @@ section {
     width: 100%;
     border-radius: 4px;
     background-color: hsla(0,0%,100%,.13);
+    text-align: center;
+    /* 책 이미지 가운데 정렬 */
     /*border-style:solid;
     border-color: violet;*/
+
 }
 .item__thumb {
     transition: box-shadow .3s ease-in-out;
@@ -138,6 +141,8 @@ section {
     height:auto;
     max-width: 100%
 }
+
+
 
 .item__info-rank {
     display: inline-grid;
@@ -181,13 +186,15 @@ section {
     font-size: 0.8em;
     line-height: 2;
     font-weight: 700;
-    color: #000;
+    /*color: #000;*/
+    color: white;
     /*border-style:solid;
     border-color:blue;*/
     word-break:break-all;
     overflow: hidden;
     text-overflow: ellipsis;
     transition: color .1s;
+
 }
 
 
@@ -222,6 +229,4 @@ button {
     font: inherit;
     cursor: pointer;
 }
-
-
 

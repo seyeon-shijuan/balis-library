@@ -1,18 +1,44 @@
 {% extends 'book_rank_app/base_layout.html' %}
 
 {% block content %}
-    <h1>here</h1>
+{% load static %}
+<link rel="stylesheet" href="{% static 'TrendingMain.css' %}">
+    <div style="margin-bottom: 20px">
+        <h2 style="color: #31B9CC">YES24 랭킹</h2>
+<!--        여기에 혜진님 컴포넌트 붙여주세요.         -->
+    </div>
+
+<!--        요즘 뜨는 도서            -->
+    <div class="trending-main-body-wrapper">
+        <section class="lists lists__noneLazy">
+            <div class="layout__flex-left">
+                <h2 class="lists__title css-0" style="color: #31B9CC">요즘 뜨는 도서</h2>
+            </div>
+            <div class="lists__slides-vertical css-1ufpzhj em9l2ot0">
+                <div class="swiper swiper-initialized swiper-horizontal swiper-pointer-events">
+                    <div class="swiper-wrapper" id="swiper-wrapper-4e3cc4bb97ae819c" aria-live="polite" style="transition-duration: 0ms; transform: translate3d(0px, 0px, 0px);">
+                        {% for key, value in books %}
+                        <div class="swiper-slide item swiper-slide-active" data-swiper-slide-index="0" role="group" aria-label="{{key}} / 20" style="width: 170px; margin-right: 9px;">
+                           <a class="undefined css-4g6ai3 e1pgrcxl0" href="/contents/M000370950">
+                                <div class="item__thumb item__thumb-25x36">
+                                   <div class="item__image lazy">
+                                        <picture class="loaded css-ovhph3 euf32k20">
+        <!--                                    <source srcset="https://image.tving.com/upload/cms/caim/CAIM2100/M000370950.jpg/dims/resize/F_webp,400" type="image/webp" class="css-1doy9ip euf32k21"><img class="loaded css-1doy9ip euf32k22" src="https://image.tving.com/upload/cms/caim/CAIM2100/M000370950.jpg/dims/resize/400" alt="압꾸정"></picture>-->
+                                            <source srcset="{{ value.image}}" type="image/webp" class="css-1doy9ip euf32k21" ><img class="loaded css-1doy9ip euf32k22" src={{value.image}} alt={{value.text}}></picture>
+                                    </div>
+                                </div>
+                                <div class="item__info item__info-rank">
+                                   <span class="item__rank-no">{{key}}</span>
+                                   <p class="item__title">{{value.title}}</p>
+                                </div>
+                            </a>
+                        </div>
+
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'trend_book_app:trends-all' %}"><button type="button" class="slide_item_all" title="전체보기 버튼" style="color:white; font-size: small;">전체보기</button></a>
+                 </div>
+             </div>
+        </section>
+    </div>
 {% endblock %}
-
-<!--<!DOCTYPE html>-->
-
-<!--<html lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>book_rank_app</title>-->
-
-<!--</head>-->
-<!--<body>-->
-<!--    <h1>hyejin main page</h1>-->
-<!--</body>-->
-<!--</html>-->
