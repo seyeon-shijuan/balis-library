@@ -177,22 +177,25 @@ section {
     letter-spacing: -5px;
 }
 
+
 .item__title {
-    position: relative;
+    /*width:130px;*/
+    text-overflow: ellipsis;
+    /*white-space : nowrap;*/
+    overflow : hidden;
+
+    /*position: relative;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-    display: -webkit-inline-box;
+    display: -webkit-inline-box;*/
     max-width: 100%;
+
     font-size: 0.8em;
     line-height: 2;
     font-weight: 700;
-    /*color: #000;*/
+
     color: white;
-    /*border-style:solid;
-    border-color:blue;*/
     word-break:break-all;
-    overflow: hidden;
-    text-overflow: ellipsis;
     transition: color .1s;
 
 }
@@ -209,9 +212,13 @@ section {
     color: #000;
 }
 
+button.to_detail_button {
+    margin-left: 1010px;
+}
 
 .slide_item_all {
     position: absolute;
+    /*margin-left: 500px;*/
     top: -2vw;
     right: 0;
     z-index: 2;
@@ -230,3 +237,6 @@ button {
     cursor: pointer;
 }
 
+h2.lists__title{
+    color: #31B9CC;
+}

@@ -1,6 +1,13 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from selenium import webdriver
-import BeautifulSoup as bs
+
+from trend_book_app.views import get_main_trends
+
+try:
+    import BeautifulSoup as bs
+except:
+    from bs4 import BeautifulSoup as bs
 from selenium.webdriver.chrome.options import Options
 
 # Create your views here.
@@ -8,38 +15,91 @@ from selenium.webdriver.chrome.options import Options
 def homepage(request):
     # return HttpResponse('homepage')
 
-    # 1시간 단위 naver, yes24 함수 호출- 우선 naver 먼저 확인 후 yes24
-    main()
-    return render(request,'book_rank_app/base.html')
-
-    
+    # trending
+    trending_list = get_main_trends()
 
 
-# 네이버 시리즈 랭킹
-def Naver_rank():
-    global naver_list
+    naver_list = get_naver_rank()
 
+    context = {
+        'books': trending_list,
+        'naver': naver_list
+        # 'naver': []
+    }
+
+    return render(request, 'book_rank_app/base.html', context)
+    # return render(request,'book_rank_app/base_hyejin.html')
+
+
+
+def get_naver_rank():
     naver_list = []
-
     options = webdriver.ChromeOptions()
-
-    # 창 열리지 않게
     options.add_argument('headless')
     naver_url = 'https://series.naver.com/ebook/top100List.series'
-
     driver = webdriver.Chrome('chromedriver', options=options)
     driver.get(naver_url)
     html = driver.page_source
     soup = bs(html, 'html.parser')
+    base_url = 'https://series.naver.com'
 
     for i in range(10):
+        row = int(i / 5 + 1)
+        col = int(i % 5 + 1)
+        # print(row, col)
+        link_str = f"div#content > div > ul:nth-child({row}) > li:nth-child({col}) > a"
         rank = soup.select('li> span.num > em')[i].text.strip()
         image_src = soup.select('ul> li > a > img')[i]['src']
         title = soup.select('ul > li > a > strong')[i].text.strip()
         author = soup.select('ul > li > a > span.writer')[i].text.strip()
-        naver_list.append((rank, image_src, title, author))
+        # link = soup.select('div#content > div > ul > li > a')[i]['href']
 
-    return render('book_rank_app/base.html',{"data": naver_list })
+        aaa = soup.select(link_str)
+        link = soup.select(link_str)[0]['href']
+
+        # content > div > ul:nth-child(1) > li:nth-child(2) > a
+        # content > div > ul:nth-child(2) > li:nth-child(1) > a
+        # content > div > ul:nth-child(2) > li:nth-child(3) > a
+
+        book_detail = {
+            'rank': rank,
+            'image_src': image_src,
+            'title': title,
+            'author': author,
+            'link': base_url+link,
+        }
+
+        naver_list.append(book_detail)
+
+    return naver_list
+
+
+
+# # 네이버 시리즈 랭킹
+# def Naver_rank():
+#     global naver_list
+#
+#     naver_list = []
+#
+#     options = webdriver.ChromeOptions()
+#
+#     # 창 열리지 않게
+#     options.add_argument('headless')
+#     naver_url = 'https://series.naver.com/ebook/top100List.series'
+#
+#     driver = webdriver.Chrome('chromedriver', options=options)
+#     driver.get(naver_url)
+#     html = driver.page_source
+#     soup = bs(html, 'html.parser')
+#
+#     for i in range(10):
+#         rank = soup.select('li> span.num > em')[i].text.strip()
+#         image_src = soup.select('ul> li > a > img')[i]['src']
+#         title = soup.select('ul > li > a > strong')[i].text.strip()
+#         author = soup.select('ul > li > a > span.writer')[i].text.strip()
+#         naver_list.append((rank, image_src, title, author))
+#
+#     return render('book_rank_app/base_hyejin.html',{"data": naver_list })
 
 
 '''
@@ -71,19 +131,19 @@ def Yes24_rank():
 
         yes24_list.append((rank, image_src, title, author))
 
-    return render('base.html', {"data": yes24_list})
+    return render('base_hyejin.html', {"data": yes24_list})
 '''
 
-def post(request):
-    if request.method=="POST":
-        list=request.POST.getlist("data[]")
-        print(list)
-    return render('base.html')
-
-def main():
-    
-  
-    while True:
-        Naver_rank()
-        # Yes24_rank()
-    time.sleep(3600)
+# def post(request):
+#     if request.method=="POST":
+#         list=request.POST.getlist("data[]")
+#         print(list)
+#     return render('base_hyejin.html')
+#
+# def main():
+#
+#
+#     while True:
+#         Naver_rank()
+#         # Yes24_rank()
+#     # time.sleep(3600)
