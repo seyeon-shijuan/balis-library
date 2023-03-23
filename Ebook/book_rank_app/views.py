@@ -15,30 +15,38 @@ from selenium.webdriver.chrome.options import Options
 def homepage(request):
     # return HttpResponse('homepage')
 
-    # trending
     trending_list = get_main_trends()
-
-
     naver_list = get_naver_rank()
+    yes24_list = get_yes24_rank()
 
     context = {
         'books': trending_list,
-        'naver': naver_list
-        # 'naver': []
+        'naver': naver_list,
+        'yes24': yes24_list
     }
 
     return render(request, 'book_rank_app/base.html', context)
     # return render(request,'book_rank_app/base_hyejin.html')
 
 
+def set_headless_driver(url):
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    driver = webdriver.Chrome('chromedriver', options=options)
+    driver.get(url)
+    return driver
+
 
 def get_naver_rank():
     naver_list = []
-    options = webdriver.ChromeOptions()
-    options.add_argument('headless')
     naver_url = 'https://series.naver.com/ebook/top100List.series'
-    driver = webdriver.Chrome('chromedriver', options=options)
-    driver.get(naver_url)
+    driver = set_headless_driver(naver_url)
+
+    # options = webdriver.ChromeOptions()
+    # options.add_argument('headless')
+    # driver = webdriver.Chrome('chromedriver', options=options)
+    # driver.get(naver_url)
+
     html = driver.page_source
     soup = bs(html, 'html.parser')
     base_url = 'https://series.naver.com'
@@ -46,15 +54,11 @@ def get_naver_rank():
     for i in range(10):
         row = int(i / 5 + 1)
         col = int(i % 5 + 1)
-        # print(row, col)
         link_str = f"div#content > div > ul:nth-child({row}) > li:nth-child({col}) > a"
         rank = soup.select('li> span.num > em')[i].text.strip()
         image_src = soup.select('ul> li > a > img')[i]['src']
         title = soup.select('ul > li > a > strong')[i].text.strip()
         author = soup.select('ul > li > a > span.writer')[i].text.strip()
-        # link = soup.select('div#content > div > ul > li > a')[i]['href']
-
-        aaa = soup.select(link_str)
         link = soup.select(link_str)[0]['href']
 
         # content > div > ul:nth-child(1) > li:nth-child(2) > a
@@ -72,6 +76,36 @@ def get_naver_rank():
         naver_list.append(book_detail)
 
     return naver_list
+
+
+def get_yes24_rank():
+    yes24_list = []
+    yes24_url = 'http://www.yes24.com/Mall/Main/EBook/017?CategoryNumber=017'
+    driver = set_headless_driver(yes24_url)
+    html = driver.page_source
+    soup = bs(html, 'html.parser')
+    base_url = 'http://www.yes24.com'
+
+    for i in range(10):
+        rank = soup.select('div.item_img > div > span > span > em')[i].text.strip()
+        image_src = soup.select('div.item_img > div > span > span > a > em.img_bdr > img')[i]['data-original']
+        title = soup.select('ul > li > div > div > div.info_row.info_name > a')[i].text.strip()
+        author = soup.select('ul > li > div > div.item_info > div.info_row.info_pubGrp > span.info_auth')[i].text.strip()
+        link = soup.select('ul > li > div > div > div.info_row.info_name > a')[i]['href']
+
+        book_detail = {
+            'rank': rank,
+            'image_src': image_src,
+            'title': title,
+            'author': author,
+            'link': base_url+link,
+        }
+
+        yes24_list.append(book_detail)
+
+    return yes24_list
+
+
 
 
 

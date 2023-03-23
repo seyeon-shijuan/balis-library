@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{% static 'book_rank_app/Bestseller.css' %}">
     <div style="margin-bottom: 20px">
 
-<!--        실시간 인기 도서         -->
+<!--        실시간 인기 도서: Naver         -->
             <article class="book_rank">
                 <div class="all_frame">
                     <div class="layout__flex-left">
@@ -45,6 +45,51 @@
             </article>
 
     </div>
+
+
+    <div style="margin-bottom: 20px">
+
+<!--        실시간 인기 도서: Yes24         -->
+            <article class="book_rank">
+                <div class="all_frame">
+                    <div class="layout__flex-left">
+                        <h2 class="lists__title css-0" style="margin-bottom:10px;">실시간 인기도서: Yes24</h2>
+                    </div>
+                    <div class="lists__slides-vertical css-1ufpzhj em9l2ot0">
+                        <div class="swiper swiper-initialized swiper-horizontal swiper-pointer-events">
+                            <div class="swiper-wrapper" aria-live="polite" style="transition-duration: 0ms; transform: translate3d(0px, 0px, 0px);">
+
+                                {% for item in yes24 %}
+                                <a href={{ item.link }}>
+                                    <li class = 'right'>
+                                        <img class="bestseller_image" src={{ item.image_src }}>
+                                        <div class ="inner_right_div">
+                                            <span class="inner_rank base_font_clr" style="color:gold; font-weight: 700;">
+                                                {{ item.rank }}
+                                            </span>
+                                            <div class="title_author_wrapper base_font_clr">
+                                                <div class="book_title_content">
+                                                    {{ item.title }}
+                                                </div>
+                                                <div class="book_author_content">
+                                                    {{ item.author }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </a>
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </article>
+
+    </div>
+
+
 
 <!--        요즘 뜨는 도서            -->
     <div class="trending-main-body-wrapper" style="clear:both;">
