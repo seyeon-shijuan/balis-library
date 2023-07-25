@@ -31,7 +31,7 @@ def main(request):
 
 
 def get_main_trends():
-    query = "select id, weekly_rank, isbn_n, isbn_m, title, writer, image from trend_book_app_trendingbooks limit 6"
+    query = "select id, weekly_rank, isbn_n, isbn_m, title, writer, image from trend_book_app_trendingbooks limit 7"
 
     book_list = []
     for book in TrendingBooks.objects.raw(query):

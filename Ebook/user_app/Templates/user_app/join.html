@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,33 +7,43 @@
     <title>Join Billie</title>
     <!-- <link rel="stylesheet" href="./style.css"> -->
 
-</head>
-<body>
-    <div class="container">
-        <h1>회원 가입</h1>
-        <form method="POST">
-            {% csrf_token %}
-            아이디 : <br>
-            <input name="user_id" type="text">
-            <br>
-            이름 : <br>
-            <input name="user_name" type="text">
-            <br>
-            비밀번호 : <br>
-            <input name="user_pwd" type="password">
-            <br>
-            비밀번호 확인 : <br>
-            <input name="check_pwd" type="password">
-            <br>
-            생년월일 : <br>
-            <input name="birthday" type="date">
-            <br><br>
-            <input type="submit" class="join_btn" value="sign up">
-        </form>
+</head> -->
+
+{% extends 'book_rank_app/base_layout.html' %}
+
+{% block content %}
+{% load static %}
+<!-- <body> -->
+    <div style="background-color:white; color:black">
+        <div class="container">
+            <h1>회원 가입</h1>
+            <form method="POST">
+                {% csrf_token %}
+                아이디 : <br>
+                <input name="user_id" type="text">
+                <br>
+                이름 : <br>
+                <input name="user_name" type="text">
+                <br>
+                비밀번호 : <br>
+                <input name="user_pwd" type="password">
+                <br>
+                비밀번호 확인 : <br>
+                <input name="check_pwd" type="password">
+                <br>
+                생년월일 : <br>
+                <input name="birthday" type="date">
+                <br><br>
+                <input type="submit" class="join_btn" value="sign up">
+            </form>
+        </div>
     </div>
+<!--     
 </body>
-</html>
+</html> -->
 
 {% if message %}
 <script>alert("{{ message }}");</script>
 {% endif %}
+
+{% endblock %}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,16 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Billie My Page</title>
 </head>
-<body>
- This is mypage html.
- <br>
- Hello {{ user.user_name }} !
- <br>
- <a href="{% url 'user_app:update' %}" >정보 수정</a>
- <a href="{% url 'user_app:delete' %}" >탈퇴하기</a>
+<body> -->
 
-<br>
- <a href="{% url 'user_app:home' %}" >메인페이지</a>
+{% extends 'book_rank_app/base_layout.html' %}
 
-</body>
-</html>
+{% block content %}
+{% load static %}
+ <!-- This is mypage html. -->
+
+ <div style="background-color: white; color:black">
+    <br>
+    Hello {{ user.user_name }} !
+    <br>
+    <a href="{% url 'user_app:update' %}" >정보 수정</a>
+    <a href="{% url 'user_app:delete' %}" >탈퇴하기</a>
+   
+   <br>
+    <a href="{% url 'user_app:home' %}" >메인페이지</a>
+ </div>
+ 
+
+<!-- </body>
+</html> -->
+
+{% endblock %}

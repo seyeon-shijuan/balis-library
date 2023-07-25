@@ -13,4 +13,7 @@ urlpatterns = [
     path('delete/', views.delete, name='delete'),
     path('mypage/', views.mypage, name='mypage'),
     path('update/', views.update, name='update'),
+    path('books/', views.select_books, name='books'),
+    path('books/<int:pk>/', views.detail, name='detail'),
+    path('recommend/', views.recommend, name='recommend'),
 ]

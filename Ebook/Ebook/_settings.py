@@ -19,7 +19,7 @@ DEBUG = True
 # DEBUG = False
 
 # 2-1. 개발
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
 # 2.2. 배포
 # ALLOWED_HOSTS = ['127.0.0.1', 'domain.name', 'ip-address']
 # ALLOWED_HOSTS = ['*']
@@ -93,7 +93,7 @@ DATABASES = {
          'USER': 'bali',
          'PASSWORD': 'ebookserver4',
          'HOST': 'localhost',
-         'PORT': '3306',
+         'PORT': '8000',
      }
 }
 

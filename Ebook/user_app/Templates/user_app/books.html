@@ -4,27 +4,29 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Billie</title>
+    <title>Select books</title>
 </head>
 <body> -->
 {% extends 'book_rank_app/base_layout.html' %}
 
 {% block content %}
 {% load static %}
+{% for book in books %}
 <div style="background-color:white; color:black">
-    This is user withdraw page.
-    <form method="POST">
-        {% csrf_token %}
-        <input name="user_pwd" type="password">
-        <input type="submit" class="delete_btn" value="탈퇴하기">
-    </form>
+    <tr>
+        <a href="{{book.pk}}/">{{book.title}} <br> </a>
+     </tr>
+     {% endfor %}
+     <input type="button" value="돌아가기" onclick="back()">
 </div>
 <!--     
 </body>
 </html> -->
 
-{% if message %}
-<script>alert("{{ message }}");</script>
-{% endif %}
+<script>
+    const back = () => {
+        window.history.back();
+    }
+</script>
 
 {% endblock %}

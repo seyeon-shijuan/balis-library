@@ -85,9 +85,9 @@ DATABASES = {
          'OPTIONS': {
              'sql_mode': 'traditional',
          },
-         'NAME': 'ebook',
-         'USER': 'bali',
-         'PASSWORD': 'ebookserver4',
+         'NAME': 'final',
+         'USER': 'root',
+         'PASSWORD': 'starlight0630!',
          'HOST': 'localhost',
          'PORT': '3306',
      }
@@ -141,3 +141,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGOUT_REDIRECT_URL = '/'
