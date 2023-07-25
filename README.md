@@ -72,19 +72,19 @@ E-book 통합 관리 시스템
       <td align="center">
         교보문고 크롤링<br>
         회원기능 및<br>
-        도서기능<br>
+        도서기능 개발<br>
         추천시스템 서빙
       </td>
       <td align="center">
         Yes24 크롤링<br>
         지도 시각화<br>
-        추천시스템 구현
+        추천시스템 개발
       </td>
       <td align="center">
         네이버 크롤링<br>
-        메인 및 <br>
-        요즘뜨는도서 추천<br>
-        Django 설계
+        메인 및 레이아웃<br>
+        요즘뜨는도서 개발<br>
+        Django 설계, 배포
       </td>
       <td align="center">
         밀리의서재 크롤링<br>
